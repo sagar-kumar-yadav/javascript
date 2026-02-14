@@ -74,3 +74,5 @@ let loans = [
 ];
 let totalAmount = loans.reduce((sum, loan)=> sum+loan.amount, 0);
 console.log(totalAmount);
+
+// arrays are in js orderd of collections of elemennt, they support method like push, pop, unshift, shift, map, filter, reduce for manipulating array in js.
