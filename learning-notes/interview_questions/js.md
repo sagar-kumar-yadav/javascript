@@ -568,3 +568,220 @@ let arr = [10, 20, 30];
   let result = arr.some(x => x > 5); // true
   // All numbers are greater than 5
   ```
+### Spread Operator
+- Used for:
+  - Copying arrays
+  - Merging arrays
+  ```js
+  let newArr = [...arr];  // [ 10, 20, 30 ]
+  ```
+- Destructuring
+```js
+// insted of
+let a = arr[0];
+let b = arr[1];
+console.log(a); // 10
+console.log(b); // 20
+
+// Use destructuring
+let [a, b, c] = arr;
+console.log(a); // 10
+console.log(b); // 20
+console.log(c); // 30
+
+// skip values
+let [first, , third] = arr;
+console.log(third); // 30
+
+// default values
+let arr = [10];
+let [a, b = 50] = arr;
+console.log(b); // 50
+```
+## Shallow Copy vs Deep Copy
+  - Shallow Copy
+    - Copies only the first level
+    - Nested objects/arrays still share the same reference
+    - Changing nested data affects the original
+  ```js
+  let user = {
+      name: "John",
+      address: {
+          city: "New York"
+      }
+  };
+  let copy = { ...user }; // shallow copy
+  copy.name = "Mike";
+  copy.address.city = "Los Angeles";
+  console.log(user.name);          // John (separate)
+  console.log(user.address.city);  // Los Angeles (changed!)
+  // name (primitive) → copied by value
+  // address (object) → copied by reference
+  ```
+- Deep Copy
+  - Copies everything, including nested objects
+  - No shared references
+  - Changes do NOT affect original
+  ```js
+  let user = {
+    name: "John",
+    address: {
+      city: "New York"
+    }
+  };
+  let copy = structuredClone(user); // deep copy
+  copy.name = "Mike";
+  copy.address.city = "Los Angeles";
+  console.log(copy) // { name: 'Mike', address: { city: 'Los Angeles' } }
+  console.log(user.name);          // John
+  console.log(user.address.city);  // New York
+  // NOTE:- structuredClone() cannot clone functions
+    ```
+- React state bug exapmles
+```js
+let state = {
+  user: {
+    name: "John"
+  }
+};
+let newState = { ...state };
+newState.user.name = "Mike";
+console.log(state); // { user: { name: 'Mike' } }
+console.log(newState); // { user: { name: 'Mike' } }
+// fix  shallow copy in react
+let newState = {
+  ...state,
+  name : "Mike"
+}
+console.log(state); // { user: { name: 'John' } }
+console.log(newState); // { user: { name: 'John' }, name: 'Mike' }
+// React may NOT re-render properly
+// because nested object reference didn’t change.
+```
+- When is shallow copy actually good?
+  - When object contains only primitive values
+  - When you intentionally want shared references
+  - For performance optimization in some cases
+```js
+// shallow copy
+const obj2 = { ...obj1 };
+
+// deep copy
+const deep = JSON.parse(JSON.stringify(obj));
+// note : Not recommended for functions/undefined/Date.
+// modern way - 
+structuredClone(obj);
+```
+## Objects
+- key-value pairs
+- used to store structured data
+### object creation
+```js
+// 1. object literal
+const obj = {
+  name: "Sagar",
+  age: 25,
+  isAdmin: false
+  greet() {}
+}
+console.log(obj) // { name: 'Sagar', greet: [Function: greet] }
+// Keys are called properties
+
+// 2. using new object
+const obj1 = new Object();
+obj1.name = "Sagar";
+obj1.age = 24
+console.log(obj1) // { name: 'Sagar', age: 24 }
+
+// 3. Constructor Function
+function User(name, age) {
+  this.name = name;
+  this.age = age;
+}
+const user1 = new User("Sagar", 25);
+const user2 = new User("yadav", 26);
+console.log(user1) // User { name: 'Sagar', age: 25 }
+console.log(user1) // User { name: 'yadav', age: 26 }
+
+// ES6 Class
+class User {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+// Object.create()
+const person = {
+  greet() { console.log("Hello"); }
+};
+const user = Object.create(person);
+```
+### Accessing Object Properties
+```js
+const user = { name: "Sagar", age: 25 };
+// Dot Notation
+console.log(user.name) // Sagar 
+
+// Bracket Notation
+console.log(user["age"]) // 25
+// Use bracket when: Property name has spaces, Dynamic key
+const key = "name";
+console.log(user[key]); // Sagar
+```
+### Adding, Updating & Deleting Properties
+```js
+// Add
+user.city = "Noida";        
+console.log(user.city); // Noida
+// Update
+user.age = 26;          
+console.log(user.age);  // 26
+// Delete
+delete user.city;      
+console.log(user.city); // undefined
+```
+### Object Methods
+- Functions inside objects are called methods.
+```js
+const user = {
+  name: "Sagar",
+  greet() {
+    return `Hello ${this.name}`;
+  }
+};
+// note - this refers to the current object.
+```
+### Object Iteration
+```js
+// for in
+for (let key in user) {
+  console.log(key, user[key]);
+} 
+// name Sagar
+// age 26
+
+// Object.keys()
+console.log(Object.keys(user)) // ["name", "age"]
+
+// Object.values()
+console.log(Object.values(user)); // [ 'Sagar', 26 ]
+
+// Object.entries()
+console.log(Object.entries(user)); //[ [ 'name', 'Sagar' ], [ 'age', 26 ] ]
+```
+### Object Destructuring (ES6)
+```js
+const user = { name: "Sagar", age: 25 };
+const { name, age } = user; 
+// With rename:
+const { name: username } = user;
+
+// Spread Operator with Objects
+const user = { name: "Sagar" };
+const updatedUser = { ...user, age: 25 };
+// Used for:
+    // Cloning
+    // Merging
+    // Updating state (React)
+```
