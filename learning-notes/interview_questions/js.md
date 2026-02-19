@@ -5,11 +5,11 @@
 - dynamically typed
 - event-driven
 
-used for:-
-- frontend
-- backend
+- used for:-
+  - frontend
+  - backend
 
-### Data Types
+## Data Types
 ### primitive(store by value)
 - string
 - number
@@ -40,7 +40,7 @@ used for:-
 
 ---
 
-### hoisting
+## Hoisting
 - Variables & functions are moved to top during compilation.
 ```js
 console.log(a); // undefined
@@ -675,6 +675,7 @@ structuredClone(obj);
 ## Objects
 - key-value pairs
 - used to store structured data
+- Objects are stored in heap memory
 ### object creation
 ```js
 // 1. object literal
@@ -784,4 +785,259 @@ const updatedUser = { ...user, age: 25 };
     // Cloning
     // Merging
     // Updating state (React)
+```
+### Object.freeze() & Object.seal()
+```js
+Object.freeze(obj);
+// Cannot add/update/delete
+// ex - 1
+const obj = { address: { city: "Noida" } };
+Object.freeze(obj);
+obj.address.city = "Delhi";
+console.log(obj.address.city); // Delhi
+// Nested object still mutable.
+
+Object.seal(obj);
+// Cannot add/delete
+// Can update
+```
+### Optional Chaining (ES2020)
+```js
+user?.address?.city
+// Prevents error if property doesn't exist.
+```
+### Nullish Coalescing
+```js
+const value = user.address ?? "Ranchi";
+console.log(value);
+// Returns default only if null or undefined
+```
+## Prototype & Inheritance in JavaScript
+### Object Prototypes (Very Important)
+- In JavaScript, every object has a hidden property called [[Prototype]].
+- It allows objects to inherit properties and methods from another object.
+- Every object has a prototype.
+```js
+// we can access using 
+object.__proto__
+
+// Or the standard way:
+Object.getPrototypeOf(object)
+```
+- Why Prototype is Important?
+  - Because JavaScript uses Prototype-based inheritance, not classical inheritance like Java or C++.
+  - Instead of copying methods, objects share methods through prototypes → memory efficient.
+  ```js
+  // Example Without Prototype (Wrong Way)
+  function Person(name) {
+    this.name = name;
+    this.greet = function () {
+      console.log("Hello " + this.name);
+    };
+  }
+  const p1 = new Person("Sagar");
+  const p2 = new Person("Rahul");
+  // What actually happens in memory?
+  // Every time you create a new object:
+    // A new copy of greet() is created.
+    // So p1.greet and p2.greet are two different functions.
+    console.log(p1.greet === p2.greet); // false
+    // That means two separate function instances in memory.
+
+  // Using Prototype (Correct Way)
+  function Person(name) {
+    this.name = name;
+  }
+
+  Person.prototype.greet = function () {
+    console.log("Hello " + this.name);
+  };
+  const p1 = new Person("Sagar");
+  const p2 = new Person("Rahul");
+  // now check
+  console.log(p1.greet === p2.greet); // true
+  // Both objects share ONE function in memory.
+  ```
+  - why Prototype is Used (Real Reason)
+    - Memory Efficiency (Very Important)
+    - Imagine:
+      - 10,000 users
+      - Each has 5 methods
+    - Without prototype:
+      - 10,000 × 5 = 50,000 function copies 
+    - With prototype:
+      - Only 5 functions total
+  - when not to use Prototype
+    - If a method depends on private variables inside constructor, don’t use prototype.
+    ```js
+    function Counter() {
+      let count = 0; // private
+
+      this.increment = function () {
+        count++;
+        console.log(count);
+      };
+    }
+    // Here count is private.
+    // If you move increment to prototype, it cannot access count.
+    // When only one object exists
+    ```
+### Getters & Setters
+- Getters and Setters are special methods that allow you to:
+  - Control how a property is accessed
+  - Control how a property is modified
+  - Add validation or logic
+  - Protect internal data
+```js
+const person = {
+  firstName: "Sagar",
+  lastName: "Yadav",
+  get fullName() {
+    return this.firstName + " " + this.lastName;
+  },
+
+  set fullName(value) {
+    const parts = value.split(" ");
+    this.firstName = parts[0];
+    this.lastName = parts[1];
+  }
+};
+console.log(person.fullName);  // Sagar Yadav
+
+person.fullName = "Rahul Sharma";
+console.log(person.firstName); // Rahul
+console.log(person.lastName);  // Sharma
+// Notice: we used person.fullName like a property, not a function.
+```
+- Why Use Getters & Setters
+  - Validation
+  - Data Protection (Encapsulation)
+- Getter must return something
+- Setter must take exactly one parameter
+- You cannot have only setter without getter (good practice to have both)
+## Asynchronous JavaScript
+- JavaScript is single-threaded.
+- That means:
+  - It can do one task at a time.
+- But many operations take time:
+  - API calls
+  - Database queries
+  - File reading
+  - Timers
+  - Payment processing
+- To avoid blocking the app, JavaScript uses asynchronous programming.
+```js
+console.log("Start");
+
+setTimeout(() => {
+  console.log("Inside Timeout");
+}, 2000);
+
+console.log("End");
+// output : -
+  // Start
+  // End
+  // Inside Timeout
+
+// Because setTimeout is asynchronous.
+```
+- How JavaScript Handles Async
+  - Call Stack
+  - Web APIs / Node APIs
+  - Callback Queue
+  - Event Loop
+    - Event Loop Flow
+      - Call Stack
+          ↓
+      - Web APIs
+          ↓
+      - Callback Queue
+          ↓
+      - Event Loop
+          ↓
+      - Back to Call Stack
+  ```js
+  setTimeout(() => {
+    console.log("Hello");
+  }, 0);
+  // Even with 0ms, it doesn't run immediately.
+  // why?
+    - Goes to Web API
+    - After timer completes → goes to Queue
+    - Event Loop waits for stack to be empty
+    - Then executes
+  ```
+## Types of Asynchronous Patterns
+### Callbacks
+```js
+function fetchData(callback) {
+  setTimeout(() => {
+    callback("Data received");
+  }, 1000);
+}
+
+fetchData((data) => {
+  console.log(data);
+});
+```
+- Problem: Callback Hell
+```js
+getUser(function(user){
+  getOrders(user.id, function(orders){
+    getPayment(orders, function(payment){
+      ...
+    });
+  });
+});
+```
+### Promises (Better Solution)
+```js
+const fetchData = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Data received");
+  }, 1000);
+});
+
+fetchData
+  .then(data => console.log(data))
+  .catch(err => console.log(err));
+```
+- States of Promise:
+  - Pending
+  - Fulfilled
+  - Rejected
+### Async / Await (Best & Cleanest)
+```js
+async function getData() {
+  try {
+    const response = await fetch("https://api.example.com");
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+```
+- Looks synchronous but works asynchronously.
+### Microtasks vs Macrotasks (Advanced Interview)
+- Macrotask:  
+  - setTimeout  
+  - setInterval
+  - setImmediate
+- Microtask:  
+  - Promise.then()
+  - async/await
+- Microtasks run before macrotasks.
+```js
+console.log("Start");
+setTimeout(() => console.log("Timeout"), 0);
+Promise.resolve().then(() => console.log("Promise"));
+console.log("End");
+// output:-
+  // Start
+  // End
+  // Promise
+  // Timeout
+// Why?
+- Microtask queue runs before macrotask queue.
 ```
