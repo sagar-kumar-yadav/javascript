@@ -1041,3 +1041,301 @@ console.log("End");
 // Why?
 - Microtask queue runs before macrotask queue.
 ```
+## Memory Management
+- JavaScript has automatic garbage collection.
+- You don’t manually free memory like in C/C++.
+### Memory Lifecycle in JavaScript
+- There are 3 steps:
+  - Allocation – Memory is assigned
+  - Usage – Program reads/writes memory
+  - Release – Garbage Collector frees unused memory
+### Types of Memory in JS
+- Stack Memory
+  - Stores primitive values
+  - Stores function calls
+  - Fast
+  - Fixed size
+  ```js
+  let name = "Sagar";
+  let age = 25;
+  // Stored in stack.
+  ```
+- Heap Memory
+  - Stores objects
+  - Dynamic memory
+  - Slower than stack
+  ```js
+  let user = {
+    name: "Sagar",
+    role: "Admin"
+  };
+  // Objects live in heap.
+  ```
+- Garbage Collection (Very Important)
+  -  JavaScript uses Mark-and-Sweep Algorithm.
+    - How it works:
+      - GC marks all reachable objects
+      - Unreachable objects are removed
+      ```js
+      let user = { name: "Sagar" };
+      user = null; // Now previous object becomes unreachable
+      ```
+      - GC will remove it automatically.
+- Memory Leak (Important for Interviews)
+  - Memory leak happens when:
+    - Memory is no longer needed but still referenced.
+    - Common Causes of Memory Leaks
+    ```js
+    // Global Variables
+    function test() {
+      data = "Hello"; // accidentally global
+    }
+    // Never released
+    ```
+## ES6+ Features
+- ES6 (ECMAScript 2015) is a major update to JavaScript.
+### let & const (Block Scope)
+```js
+let age = 25;
+const PI = 3.14;
+// Block scoped
+// const cannot be reassigned
+// Cleaner & safer
+```
+### Arrow Functions
+```js
+const greet = (name) => {
+  return "Hello " + name;
+};
+// const greet = name => "Hello " + name;
+const greet = name => "Hello " + name;
+// Arrow functions do not have their own this.
+// Used heavily in React.
+```
+### Template Literals
+```js
+const name = "Sagar";
+console.log(`Hello ${name}`);
+// Multiline support
+// Expression support
+```
+### Destructuring
+```js
+// Object Destructuring
+const user = { name: "Sagar", age: 25 };
+const { name, age } = user;
+
+// Array Destructuring
+const arr = [1, 2, 3];
+const [a, b] = arr;
+```
+- Very common in React props.
+### Spread & Rest Operator (...)
+```js
+// Spread
+const arr1 = [1, 2];
+const arr2 = [...arr1, 3, 4];
+```
+- Used in React state updates.
+```js
+// rest
+function sum(...numbers) {
+  return numbers.reduce((a, b) => a + b);
+}
+```
+### Default Parameters
+```js
+function greet(name = "Guest") {
+  console.log(name);
+}
+```
+### Classes
+```js
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    console.log("Hello " + this.name);
+  }
+}
+// Syntactic sugar over prototype
+```
+### Modules (Very Important)
+```js
+// export
+export const add = (a, b) => a + b;
+
+// import
+import { add } from "./file.js";
+```
+- Used everywhere in React + Node.
+### Promises
+### Async / Await (ES8)
+### Optional Chaining (?.)
+```js
+console.log(user?.address?.city);
+// Prevents errors if undefined.
+```
+### Nullish Coalescing (??)
+```js
+const name = user.name ?? "Guest";
+// Different from || because it only checks null or undefined.
+```
+### Object Shorthand
+```js
+const name = "Sagar";
+const user = { name };
+```
+## Debouncing & Throttling
+- Debouncing & Throttling are very important for React + frontend performance
+### Why Do We Need Debouncing & Throttling?
+- Some events fire too frequently:
+  - onChange (search input)
+  - scroll
+  - resize
+  - mousemove
+  - button clicks
+- If we call API on every keystroke → server overload 
+So we control execution frequency.
+### Debouncing
+- Debouncing ensures a function runs only after a delay, and only if no new event occurs during that delay.
+- simple meaning
+  - “Wait until user stops typing.”
+- Example (Search Input)
+  - Without debouncing:
+  ```js
+  input.addEventListener("input", () => {
+    fetchData(); // called on every key press
+  });
+  ```
+  - If user types “Sagar” → 5 API calls
+  - Debounce Implementation
+  ```js
+  function debounce(func, delay) {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  }
+
+  // Usage:
+  const handleSearch = debounce(() => {
+    console.log("API Call");
+  }, 500);
+  input.addEventListener("input", handleSearch);
+  // Only 1 API call
+  // Runs after 500ms of inactivity
+  ```
+### Throttling
+- Throttling ensures a function runs at most once in a specified time interval.
+- Simple Meaning
+  - “Run every X milliseconds.”
+  ```js
+  // Throttle Implementation
+  function throttle(func, delay) {
+    let lastCall = 0;
+
+    return function (...args) {
+      const now = Date.now();
+
+      if (now - lastCall >= delay) {
+        lastCall = now;
+        func.apply(this, args);
+      }
+    };
+  }
+
+  // Usage:
+  window.addEventListener("scroll", throttle(() => {
+    console.log("Scroll event");
+  }, 1000));
+  // Runs only once every 1 second
+  // Even if user scrolls continuously
+  ```
+ - React Example
+ ```js
+ useEffect(() => {
+   const handler = setTimeout(() => {
+    fetchUsers(searchTerm);
+  }, 500);
+
+  return () => clearTimeout(handler);
+  }, [searchTerm]);
+  // That’s debouncing inside React.
+ ```
+## Execution Context
+### What is Execution Context?
+- Execution Context is the environment in which JavaScript code is evaluated and executed.
+- Whenever JS runs code, it creates an execution context.
+- Types of Execution Context
+  - There are 3 types:
+    - Global Execution Context (GEC)
+    - Function Execution Context (FEC)
+    - Eval Execution Context (rarely used)
+### Global Execution Context (GEC)
+- Created when JS file starts running.
+  - Creates global object (window in browser, global in Node)
+  - Sets this
+  - Allocates memory for variables & functions
+- There is only one global execution context.
+### Function Execution Context (FEC)
+- Created whenever a function is invoked.
+- Each function call creates a new execution context.
+- Execution Context Has 2 Phases
+  - Memory Creation Phase (Hoisting Phase)
+    - Variables → stored as undefined
+    - Functions → stored completely
+    - this is set
+  - Execution Phase
+    - Code runs line by line
+    - Variables get actual values
+    ```js
+    console.log(a);
+    var a = 10; 
+    function test() {
+      console.log("Hello");
+    }
+    // Memory Phase:
+      // a → undefined
+      // test → full function stored
+    // Execution Phase:
+      // console.log(a); // undefined
+      // a = 10
+    // That’s why it prints undefined.
+    ```
+### Call Stack
+- Execution contexts are managed using Call Stack.
+```js
+function one() {
+  two();
+}
+function two() {
+  console.log("Hello");
+}
+one();
+// Call Stack Flow:
+  // Global()
+  // → one()
+  // two()
+  // → console.log()
+  // Then they pop out one by one.
+
+  // Visual Representation
+  | two() |
+  | one() |
+  | GEC   |
+```
+- Interview-Ready Answer
+
+  - Execution context is the environment where JavaScript code runs. It consists of memory creation and execution phases. JavaScript creates a global execution context first, and then creates new execution contexts for every function call, which are managed by the call stack.
+## Error Handling
+- Error handling is the process of detecting, managing, and responding to runtime errors in a program without crashing the application.
+- Types of Errors in JavaScript:
+  - Syntax Error
+  - Reference Error
