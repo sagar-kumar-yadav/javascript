@@ -1338,4 +1338,72 @@ one();
 - Error handling is the process of detecting, managing, and responding to runtime errors in a program without crashing the application.
 - Types of Errors in JavaScript:
   - Syntax Error
+  ```js
+  let a = ;
+  ```
   - Reference Error
+  ```js
+  console.log(x); // x is not defined
+  ```
+  - Type error
+  ```js
+  null.toUpperCase();
+  ```
+  - Custom Errors
+    - We can create our own errors.
+### try...catch (Basic Error Handling)
+```js
+try {
+  let result = riskyFunction();
+  console.log(result);
+} catch (error) {
+  console.log("Something went wrong:", error.message);
+}
+```
+- If error happens inside try, it goes to catch.
+### finally Block
+```js
+try {
+  console.log("Try block");
+} catch (err) {
+  console.log("Error");
+} finally {
+  console.log("Always runs");
+}
+```
+- Useful for:
+  - Closing DB connection
+  - Cleaning resources
+### throw
+```js
+function checkAge(age) {
+  if (age < 18) {
+    throw new Error("Age must be 18+");
+  }
+  return "Valid";
+}
+
+try {
+  checkAge(15);
+} catch (err) {
+  console.log(err.message);
+}
+```
+- Error Handling in Async Code
+### Creating Custom Error Class
+```js
+class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+```
+- Used in production-level apps.
+### Global Error Handling in Node
+```js
+process.on("uncaughtException", (err) => {
+  console.error("Unhandled Error:", err);
+});
+```
+- Error handling in JavaScript is done using try-catch blocks to manage runtime errors. In asynchronous code, errors are handled using .catch() with promises or try-catch with async/await. In backend applications, proper error handling prevents server crashes and ensures proper HTTP responses.
