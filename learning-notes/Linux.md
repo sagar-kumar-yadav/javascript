@@ -1,0 +1,97 @@
+- What is Linux and why is it used in servers?
+    - Linux is an open-source operating system based on Unix.
+    - Why used in servers:
+        - Stable and reliable
+        - Secure
+        - free and open source
+        - Ubuntu, CentOS, RedHat
+- What is Linux Kernel?
+    - The kernel is the core of Linux OS.
+        - It manages:
+        - CPU
+        - Memory
+        - Hardware devices
+        - Processes
+- Difference between cp and mv
+    - cp Copy files
+    - mv move or rename files
+- What are file permissions?
+    - Every file or directory has three permission types:
+        - read r
+        - write w
+        - execute x
+- Difference between chmod and chown
+    - chmod Change permissions
+    - chown Change file owner
+- Check running processes
+    - ps -ef
+    - or top
+- Difference between top and ps
+    - top -> Real-time process
+    - ps -> snapshot of process
+- Kill process
+    - First find process:
+        - ps -ef | grep processname
+    - then kill
+        - kill PID
+    - Force kill
+        - kill -9 PID
+- Check CPU usage
+    - top
+    - or htop
+- Check disk space
+    - df -h
+- Check memory usage
+    - free -m
+- Find large files
+    - du -sh *
+- Check server connectivity
+    - ping google.com
+- Difference between ping and traceroute
+    - Ping -> Check connectivity
+    - Traceroute-> Shows network path
+- Check open ports
+    - netstat -tulnp
+    - or ss -tulnp
+- Check IP address
+    - ip a
+    - ipconfig
+- System logs location
+    - Usually in
+        - /var/log
+- Use of tail command
+    - Shows last lines of file.
+        - tail file.log
+    - Real time logs
+        - tail -f file.log
+- Difference between cat, less, more
+    - cat -> Show entire file
+    - less -> Scroll both directions
+    - more -> Scroll down only
+- grep command
+    - Search text in file.
+        - grep error file.log
+- Difference between grep, awk, sed
+    - grep -> Search text
+    - awk -> Data processing
+    - sed -> Edit/replace text
+- Search word in file
+    - grep "word" file.txt
+- Server is slow – how to troubleshoot?
+    - step 1 -> Check CPU 
+        - top
+    - step 2 -> check memory
+        - free -m
+    - Check disk
+        - df -h
+    - Check processes
+        - ps -ef
+    - Check logs
+        - tail -f /var/log/syslog
+- Disk space full
+    - check disk -> df -h
+    - du -sh *
+- Application not responding
+    - Check process -> ps -ef | grep app
+    - Check logs -> tail -f log.log
+- Service not running
