@@ -121,6 +121,101 @@ FROM products;
 SELECT MIN(price) AS lowest_price
 FROM products;
 ```
+## PostgreSQL JOINS
+- A JOIN clause is used to combine rows from two or more tables, based on a related column between them.
+```sql
+-- products table:
+product_id |  product_name  | category_id
+------------+----------------+-------------
+         33 | Geitost        |           4
+         34 | Sasquatch Ale  |           1
+         35 | Steeleye Stout |           1
+         36 | Inlagd Sill    |           8
+
+-- categories table:
+category_id | category_name
+-------------+----------------
+           1 | Beverages
+           2 | Condiments
+           3 | Confections
+           4 | Dairy Products
+
+-- Join products to categories using the category_id column:
+select product_id, product_name, category_name
+from products
+INNER JOIN categories ON products.category_id = categories.category_id;
+
+-- result
+ product_id |  product_name  | category_name
+------------+----------------+----------------
+         33 | Geitost        | Dairy Products
+         34 | Sasquatch Ale  | Beverages
+         35 | Steeleye Stout | Beverages
+         36 | Inlagd Sill    | Seafood
+```
+- INNER JOIN: Returns records that have matching values in both tables
+- LEFT JOIN: Returns all records from the left table, and the matched records from the right table
+- RIGHT JOIN: Returns all records from the right table, and the matched records from the left table
+- FULL JOIN: Returns all records when there is a match in either left or right table
+- CROSS JOIN: Returns the Cartesian product of two or more tables (combines every row from the first table with every row from the second table)
+
+## INNER JOIN
+```sql
+-- testproducts table:
+testproduct_id |      product_name      | category_id
+----------------+------------------------+-------------
+              1 | Johns Fruit Cake       |           3
+              2 | Marys Healthy Mix      |           9
+              3 | Peters Scary Stuff     |          10
+              4 | Jims Secret Recipe     |          11
+              5 | Elisabeths Best Apples |          12
+              6 | Janes Favorite Cheese  |           4
+              7 | Billys Home Made Pizza |          13
+              8 | Ellas Special Salmon   |           8
+              9 | Roberts Rich Spaghetti |           5
+            10 | Mias Popular Ice        |          14
+(10 rows)
+
+-- categories table:
+category_id | category_name  |                       description
+-------------+----------------+------------------------------------------------------------
+           1 | Beverages      | Soft drinks, coffees, teas, beers, and ales
+           2 | Condiments     | Sweet and savory sauces, relishes, spreads, and seasonings
+           3 | Confections    | Desserts, candies, and sweet breads
+           4 | Dairy Products | Cheeses
+           5 | Grains/Cereals | Breads, crackers, pasta, and cereal
+           6 | Meat/Poultry   | Prepared meats
+           7 | Produce        | Dried fruit and bean curd
+           8 | Seafood        | Seaweed and fish
+(8 rows)
+```
+- Notice that many of the products in testproducts have a category_id that does not match any of the categories in the categories table.
+- By using INNER JOIN we will not get the records where there is not a match, we will only get the records that matches both tables:
+```sql
+-- Join testproducts to categories using the category_id column:
+SELECT testproduct_id, product_name, category_name
+FROM testproducts
+INNER JOIN categories ON testproducts.category_id = categories.category_id;
+
+-- Only the records with a match in BOTH tables are returned:
+
+```
+## Group BY
+- GROUP BY is used to group rows with the same values and perform aggregate calculations like COUNT, SUM, or AVG on each group.
+```sql
+SELECT customer, COUNT(*) AS total_orders
+FROM Orders
+GROUP BY customer;
+```
+## HAVING
+- The HAVING clause was added to SQL because the WHERE clause cannot be used with aggregate functions.
+- Aggregate functions are often used with GROUP BY clauses, and by adding HAVING we can write condition like we do with WHERE clauses.
+```sql
+SELECT COUNT(customer_id), country
+FROM customers
+GROUP BY country
+HAVING COUNT(customer_id) > 5;
+```
 
 
 
@@ -133,6 +228,4 @@ FROM products;
 
 
 
-### mongodb
-### prisma 
-### indexing
+
